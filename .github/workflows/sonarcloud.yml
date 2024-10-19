@@ -1,0 +1,48 @@
+name: Análisis estático con SonarCloud
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  sonarcloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Leer repositorio
+        uses: actions/checkout@v3
+
+      - name: Verificar estructura del directorio
+        run: |
+          ls -R
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+
+      - name: Cachear paquetes de Maven
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven
+
+      - name: Construir artefacto con Maven
+        run: mvn clean install
+
+      - name: Escaneo y cobertura con SonarCloud
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn verify org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar \
+          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+          -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+          -Dsonar.host.url=https://sonarcloud.io \
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
+      - name: Verificar archivo de cobertura de JaCoCo
+        run: |
+          if [ -f target/site/jacoco/jacoco.xml ]; then echo "Archivo de cobertura encontrado 🧪"; else echo "Archivo de cobertura no encontrado"; fi

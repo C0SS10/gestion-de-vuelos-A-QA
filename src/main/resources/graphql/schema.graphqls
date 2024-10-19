@@ -1,0 +1,77 @@
+type Query {
+    getAircraftsByFilters(aircraftModel:AircraftModel, maxSeats:Int, seatConfiguration:SeatConfiguration): [AircraftDTO]
+    aircraftById (id:ID!) : AircraftDTO
+    getFlightsByFilters(departureCity:String, destinationCity:String, departureDate:String,arrivalDate:String) : [FlightDTO]
+    flightById (id: ID!) : FlightDTO
+}
+
+type Mutation{
+    createAircraft(input: AircraftInput): AircraftDTO
+    updateAircraft(id: ID!, input: AircraftInput): AircraftDTO
+    deleteAircraft(id: ID!):Boolean
+    createFlight(input: FlightInput): FlightDTO
+    updateFlight(id : ID!, input: FlightInput): FlightDTO
+    deleteFlight(id: ID!): Boolean
+}
+
+input AircraftInput{
+    aircraftModel: AircraftModel!
+    maxSeats: Int!
+    seatConfiguration: SeatConfiguration!
+}
+
+input FlightInput {
+    flightNumber: String!
+    flightType: FlightType!
+    departureCity: String!
+    destinationCity: String!
+    aircraftId: ID!
+    departureDate: String!
+    arrivalDate: String!
+    departureTime: String!
+    arrivalTime: String!
+    price: Float!
+    taxPercentage: Float!
+    surcharge: Float!
+}
+
+type AircraftDTO {
+    id: ID
+    aircraftModel: AircraftModel
+    maxSeats: Int
+    seatConfiguration: String
+}
+
+type FlightDTO {
+    id: ID
+    flightNumber: String
+    flightType: FlightType
+    departureCity: String
+    destinationCity: String
+    aircraftId: ID
+    departureDate: String
+    arrivalDate: String
+    departureTime: String
+    arrivalTime: String
+    price: Float
+    taxPercentage: Float
+    surcharge: Float
+}
+
+enum AircraftModel{
+    B737,
+    A320,
+    A330,
+    B737D
+}
+
+enum FlightType{
+    NACIONAL,
+    INTERNACIONAL
+}
+
+enum SeatConfiguration{
+    TWO_TWO_TWO,
+    THREE_THREE_THREE,
+    TWO_FOUR_TWO
+}
