@@ -18,6 +18,8 @@ import java.util.List;
 @Service
 public class AircraftService implements IAircraftService {
 
+    final String MESSAGE_NOT_FOUND = "El avion con el ID %d no fue encontrado";
+
     @Autowired
     private IAircraftRepository aircraftRepository;
 
@@ -56,14 +58,14 @@ public class AircraftService implements IAircraftService {
     @Override
     public AircraftDTO getAircraftById(Long id) {
         Aircraft aircraft = aircraftRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("El avion con el ID %d no fue encontrado", id)));
+                () -> new EntityNotFoundException(String.format(MESSAGE_NOT_FOUND, id)));
         return aircraftMappers.toAircraftDTO(aircraft);
     }
 
     @Override
     public AircraftDTO updateAircraft(Long id, AircraftDTO aircraftDTO) {
         Aircraft aircraft = aircraftRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("El avion con el ID %d no fue encontrado", id)));
+                () -> new EntityNotFoundException(String.format(MESSAGE_NOT_FOUND, id)));
         if (aircraftDTO.getAircraftModel() != null) {
             aircraft.setAircraftModel(aircraftDTO.getAircraftModel());
         }
@@ -79,7 +81,7 @@ public class AircraftService implements IAircraftService {
     @Override
     public void deleteAircraft(Long id) {
         if (!aircraftRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format("El avion con el ID %d no fue encontrado", id));
+            throw new EntityNotFoundException(String.format(MESSAGE_NOT_FOUND, id));
         }
         aircraftRepository.deleteById(id);
     }
